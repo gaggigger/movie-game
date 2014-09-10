@@ -1,4 +1,5 @@
-app.factory('movieFactory', function($http, $q) {
+angular.module('app').
+factory('movieFactory', function($http, $q) {
 
   var movieFactoryMethods = {},
       hostUrl = 'https://api.themoviedb.org/3/',

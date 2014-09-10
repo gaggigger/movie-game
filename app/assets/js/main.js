@@ -926,9 +926,10 @@ function ngViewFillContentFactory($compile, $controller, $route) {
 
 })(window, window.angular);
 
-var app = angular.module('app', ['ngRoute']);
+angular.module('app', ['ngRoute']);
 
-app.config(["$routeProvider", function ($routeProvider) {
+angular.module('app').
+config(["$routeProvider", function ($routeProvider) {
   $routeProvider
     .when('/', {
       templateUrl: 'templates/home.html',
@@ -937,7 +938,8 @@ app.config(["$routeProvider", function ($routeProvider) {
     .otherwise({ redirectTo: '/' });
 }]);
 
-app.controller('MovieCtrl', ["$scope", "movieFactory", function($scope, movieFactory){
+angular.module('app').
+controller('MovieCtrl', ["$scope", "movieFactory", function($scope, movieFactory){
 
   $scope.movieResults = {};
 
@@ -951,7 +953,8 @@ app.controller('MovieCtrl', ["$scope", "movieFactory", function($scope, movieFac
 
 }]);
 
-app.factory('movieFactory', ["$http", "$q", function($http, $q) {
+angular.module('app').
+factory('movieFactory', ["$http", "$q", function($http, $q) {
 
   var movieFactoryMethods = {},
       hostUrl = 'https://api.themoviedb.org/3/',
