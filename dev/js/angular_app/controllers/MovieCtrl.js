@@ -1,5 +1,4 @@
-angular.module('app')
-.controller('MovieCtrl', function($scope, movieFactory){
+app.controller('MovieCtrl', function($scope, movieFactory){
   
   $scope.movieResults = {};
 
