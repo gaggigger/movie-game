@@ -928,7 +928,7 @@ function ngViewFillContentFactory($compile, $controller, $route) {
 
 var app = angular.module('app', ['ngRoute']);
 
-app.config(['$routeProvider', function ($routeProvider) {
+app.config(["$routeProvider", function ($routeProvider) {
   $routeProvider
     .when('/', {
       templateUrl: 'templates/home.html',
@@ -936,20 +936,22 @@ app.config(['$routeProvider', function ($routeProvider) {
     })
     .otherwise({ redirectTo: '/' });
 }]);
-app.controller('MovieCtrl', function($scope, movieFactory){
-  
+
+app.controller('MovieCtrl', ["$scope", "movieFactory", function($scope, movieFactory){
+
   $scope.movieResults = {};
 
   movieFactory.getMovies()
     .then(function(data){
-
+      $scope.movieResults = data;
+      console.log(data);
     }, function(data){
       console.error('error getting elements: ', data);
     });
 
-});
+}]);
 
-app.factory('movieFactory', function($http, $q) {
+app.factory('movieFactory', ["$http", "$q", function($http, $q) {
 
   var movieFactoryMethods = {},
       hostUrl = 'https://api.themoviedb.org/3/',
@@ -970,4 +972,4 @@ app.factory('movieFactory', function($http, $q) {
 
   return movieFactoryMethods;
 
-});
+}]);

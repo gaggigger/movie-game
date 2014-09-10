@@ -1,1 +1,9 @@
-<h1>Welcome to the Movie Game</h1>
+<h1>Welcome</h1>
+
+<p>
+  {{movieResults.title}}
+</p>
+
+<ul ng-repeat="item in movieResults.genres">
+  <li>{{item.name}}</li>
+</ul>

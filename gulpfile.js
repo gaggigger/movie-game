@@ -13,7 +13,7 @@ var gulp         = require('gulp'),
     concat       = require('gulp-concat'),
     cache        = require('gulp-cache'),
     del          = require('del'),
-    ngAnnotate   = require('ng-annotate'),
+    ngAnnotate   = require('gulp-ng-annotate'),
     sourcemaps   = require('gulp-sourcemaps');
 
 // ======================================
@@ -73,9 +73,10 @@ gulp.task('scripts', function() {
     )
     .pipe(sourcemaps.init())
     .pipe(concat('main.js'))
+    .pipe(ngAnnotate())
     .pipe(gulp.dest('app/assets/js'))
     .pipe(rename({suffix: '.min'}))
-    //.pipe(uglify())
+    .pipe(uglify())
     .pipe(gulp.dest('app/assets/js'))
 });
 
