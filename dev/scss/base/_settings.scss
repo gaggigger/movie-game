@@ -1,0 +1,40 @@
+// Site Colors
+$color-black: #222;
+$color-white: #fff;
+$color-royal: #005cb8;
+$color-gold: #edc721;
+$color-pool: #83c1bf;
+$color-agua: #eef6f6;
+$color-dkdkblue: #001325;
+$color-ltgrey: #f0eeee;
+$color-ltltgrey: #fbf9f9;
+$color-medgrey: #a1a1a1;
+
+//Used for generating paddings / margins
+$base-unit: 1em;
+$base-unit-half: $base-unit * 0.5;
+$base-unit-quarter: $base-unit * 0.25;
+
+//Grid spacings
+$cell-padding: 0;
+$cell-gutters: 0.625em;
+$grid-padding: 1.25em;
+
+// Grid col widths
+$navcol-width: 13em;
+$searchcol-width: 20em;
+
+// Fonts
+$base-font-family: liberation_sansregular, sans-serif;
+$base-font-family-bold: liberation_sansbold, sans-serif;
+$base-font-family-italic: liberation_sansitalic, sans-serif;
+$base-font-family-bold-italic: liberation_sansbold_italic, sans-serif;
+
+$base-font-size: 16px;
+$base-content-font: $base-font-size * 0.875;
+
+// Rounded Corner Base
+$base-rounded-corners: 7px;
+
+// Breakpoints
+$breakpoint: 640px;
