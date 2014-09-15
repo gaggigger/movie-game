@@ -15,14 +15,14 @@ controller('NameCtrl', function($scope, GameState, movieFactory){
 
     $scope.gameState.cast = $scope.gameState.cast.slice(0, $scope.gameState.numNames);
 
-    window.location = '/#/question';
+    window.location = '/movie-game/app/#/question';
   };
 
   $scope.noCastConfirm = function() {
 
     $scope.gameState.numNames = 0;
 
-    window.location = '/#/question';
+    window.location = '/movie-game/app/#/question';
   };
 
 
