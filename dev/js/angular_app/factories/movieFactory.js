@@ -76,7 +76,7 @@ factory('movieFactory', function($http, $q) {
     var deferred = $q.defer();
 
     method  = 'discover/movie';
-    query   = '&with_genres='+cat+'&year='+year;
+    query   = '&with_genres='+cat+'&year='+year+'&include_adult=false&vote_count.gte=5&certification_country=US&certification.lte=R';
     url     = hostUrl + method + key + query;
 
 
