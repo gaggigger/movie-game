@@ -46,13 +46,24 @@ factory('movieFactory', function($http, $q) {
   };
 
   movieFactoryMethods.getCategories = function() {
-    var deferred = $q.defer();
+    var deferred     = $q.defer(),
+        usefulGenres = [];
 
     method  = 'genre/movie/list';
     url     = hostUrl + method + key;
 
     $http.get(url).success(function(data){
-      var randGenres = MsUtils.shuffle(data.genres).slice(0, 10);
+
+      for(var i=0;i < data.genres.length;i++) {
+        var thisCat = data.genres[i].name.toLowerCase();
+
+        if(MsConsts._catBlacklist.indexOf(thisCat) === -1) {
+          usefulGenres.push(data.genres[i]);
+        }
+      }
+
+
+      var randGenres = MsUtils.shuffle(usefulGenres).slice(0, 5);
       deferred.resolve(randGenres);
     }).error(function(){
       deferred.reject('There was an error querying the tmdb API');
@@ -63,18 +74,15 @@ factory('movieFactory', function($http, $q) {
 
   movieFactoryMethods.getMovie = function(cat, year) {
     var deferred = $q.defer();
-    
+
     method  = 'discover/movie';
     query   = '&with_genres='+cat+'&year='+year;
     url     = hostUrl + method + key + query;
 
-    console.log('url: ', url);
 
     $http.get(url).success(function(data){
 
       randMovie = MsUtils.shuffle(data.results.slice(0, 1));
-
-      console.log('Name: ', randMovie[0].title);
 
       deferred.resolve(randMovie[0]);
 

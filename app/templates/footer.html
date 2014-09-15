@@ -1,4 +1,13 @@
-<p>Points: {{gameState.points}}</p>
-<p>Questions Attempted: {{gameState.questions}}</p>
+<div class="row">
+  <p class="col-xs-6"><b>Points</b>: {{gameState.points}}</p>
+  <p class="col-xs-6"><b>Questions Attempted</b>: {{gameState.questions}}</p>
+</div>
 
-<p class="text-small">This product uses the TMDb API but is not endorsed or certified by TMDb.</p>
+<div class="row">
+  <div class="col-xs-6">
+    <a href="/" class="btn btn-primary btn-sm active" role="button">New Question</a>
+  </div>
+  <div class="col-xs-6">
+    <small>This product uses the TMDb API but is not endorsed or certified by TMDb.</small>
+  </div>
+</div>

@@ -1,12 +1,9 @@
-<p>To begin, please select a movie category, then a year</p>
-
 <div class="form-group" ng-show="gameState.categories.length">
-
 
   <label for="category">Choose a category:</label>
 
   <select
-    class="form-control" 
+    class="form-control"
     ng-options="category.name for category in gameState.categories"
     ng-model="gameState.category"
     ng-change="getYears()"
@@ -20,7 +17,7 @@
   <label for="year">Choose a Year:</label>
 
   <select
-    class="form-control" 
+    class="form-control"
     ng-options="year for year in gameState.years"
     ng-model="gameState.year"
     ng-change="getMovie()"

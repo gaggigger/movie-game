@@ -37,14 +37,13 @@ controller('NameCtrl', function($scope, GameState, movieFactory){
 
     movieFactory.getCast($scope.gameState.movie.id)
       .then(function(data){
-        console.log('getCast: ', data);
         $scope.gameState.cast = data.reverse();
       }, function(data){
         console.error('error getting cast: ', data);
       });
 
   };
-  
+
   init();
 
 });

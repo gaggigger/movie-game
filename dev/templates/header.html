@@ -1,5 +1,7 @@
-<h1 ng-show="gameState.page === 'selCategory'">Welcome to the Leonard Maltin Game</h1>
+<h1 ng-show="gameState.page === 'selCategory'">Welcome</h1>
+<div class="row">
 
-<p ng-show="gameState.category.name"><b>Selected Category</b>:{{gameState.category.name}}</p>
+  <p class="col-xs-6" ng-show="gameState.category.name"><b>Selected Category</b>: {{gameState.category.name}}</p>
 
-<p ng-show="gameState.year"><b>Selected Year</b>:{{gameState.year}}</p>
+  <p class="col-xs-6" ng-show="gameState.year"><b>Selected Year</b>: {{gameState.year}}</p>
+</div>

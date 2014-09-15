@@ -8,6 +8,7 @@ controller('AnswerCtrl', function($scope, GameState, movieFactory){
       $scope.gameState.win = true;
       $scope.gameState.points++;
     }
+    $scope.gameState.questions++;
   };
 
   init();

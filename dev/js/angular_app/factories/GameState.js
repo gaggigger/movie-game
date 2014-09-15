@@ -17,6 +17,7 @@ factory('GameState', function() {
     win       : false
   };
 
+  // Use this to reset the gameState
   var questionReset = {
     category  : {},
     movie     : {},
@@ -35,16 +36,10 @@ factory('GameState', function() {
     state: function() {
       return gameState;
     },
-    resetObj: function() {
-
+    resetState: function() {
       for(var property in questionReset) {
-        console.log('property: ', property);
-        console.log('gameState.property before: ', gameState[property]);
         gameState[property] = questionReset[property];
-        console.log('gameState.property after: ', gameState[property]);
-        console.log('==================================================');
       }
-
       return gameState;
     }
   };

@@ -30,11 +30,7 @@ controller('CatCtrl', function($scope, GameState, movieFactory){
   };
 
   var init = function() {
-
-    console.log('begin new question');
-
-    // todo: Trigger gameState reset here
-    GameState.resetObj();
+    GameState.resetState();
 
     movieFactory.getCategories()
       .then(function(data){

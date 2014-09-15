@@ -1,3 +1,28 @@
+var MsConsts = {}
+
+MsConsts._catBlacklist = [
+  'history',
+  'indie',
+  'road movie',
+  'erotic',
+  'history',
+  'sporting event',
+  'fan film',
+  'music',
+  'tv movie',
+  'disaster',
+  'short',
+  'eastern',
+  'foreign',
+  'documentary',
+  'sports film',
+  'crime',
+  'neo-noir',
+  'film noir',
+  'musical',
+  'sport'
+];
+
 /**
  * @license AngularJS v1.2.17-build.163+sha.fafcd62
  * (c) 2010-2014 Google, Inc. http://angularjs.org
@@ -988,12 +1013,14 @@ controller('AnswerCtrl', ["$scope", "GameState", "movieFactory", function($scope
       $scope.gameState.win = true;
       $scope.gameState.points++;
     }
+    $scope.gameState.questions++;
   };
 
   init();
 
 
 }]);
+
 angular.module('app').
 controller('CatCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
 
@@ -1026,11 +1053,7 @@ controller('CatCtrl', ["$scope", "GameState", "movieFactory", function($scope, G
   };
 
   var init = function() {
-
-    console.log('begin new question');
-
-    // todo: Trigger gameState reset here
-    GameState.resetObj();
+    GameState.resetState();
 
     movieFactory.getCategories()
       .then(function(data){
@@ -1090,17 +1113,17 @@ controller('NameCtrl', ["$scope", "GameState", "movieFactory", function($scope, 
 
     movieFactory.getCast($scope.gameState.movie.id)
       .then(function(data){
-        console.log('getCast: ', data);
         $scope.gameState.cast = data.reverse();
       }, function(data){
         console.error('error getting cast: ', data);
       });
 
   };
-  
+
   init();
 
 }]);
+
 angular.module('app').
 controller('QuestionCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
 
@@ -1137,6 +1160,7 @@ factory('GameState', function() {
     win       : false
   };
 
+  // Use this to reset the gameState
   var questionReset = {
     category  : {},
     movie     : {},
@@ -1155,16 +1179,10 @@ factory('GameState', function() {
     state: function() {
       return gameState;
     },
-    resetObj: function() {
-
+    resetState: function() {
       for(var property in questionReset) {
-        console.log('property: ', property);
-        console.log('gameState.property before: ', gameState[property]);
         gameState[property] = questionReset[property];
-        console.log('gameState.property after: ', gameState[property]);
-        console.log('==================================================');
       }
-
       return gameState;
     }
   };
@@ -1219,13 +1237,24 @@ factory('movieFactory', ["$http", "$q", function($http, $q) {
   };
 
   movieFactoryMethods.getCategories = function() {
-    var deferred = $q.defer();
+    var deferred     = $q.defer(),
+        usefulGenres = [];
 
     method  = 'genre/movie/list';
     url     = hostUrl + method + key;
 
     $http.get(url).success(function(data){
-      var randGenres = MsUtils.shuffle(data.genres).slice(0, 10);
+
+      for(var i=0;i < data.genres.length;i++) {
+        var thisCat = data.genres[i].name.toLowerCase();
+
+        if(MsConsts._catBlacklist.indexOf(thisCat) === -1) {
+          usefulGenres.push(data.genres[i]);
+        }
+      }
+
+
+      var randGenres = MsUtils.shuffle(usefulGenres).slice(0, 5);
       deferred.resolve(randGenres);
     }).error(function(){
       deferred.reject('There was an error querying the tmdb API');
@@ -1236,18 +1265,15 @@ factory('movieFactory', ["$http", "$q", function($http, $q) {
 
   movieFactoryMethods.getMovie = function(cat, year) {
     var deferred = $q.defer();
-    
+
     method  = 'discover/movie';
     query   = '&with_genres='+cat+'&year='+year;
     url     = hostUrl + method + key + query;
 
-    console.log('url: ', url);
 
     $http.get(url).success(function(data){
 
       randMovie = MsUtils.shuffle(data.results.slice(0, 1));
-
-      console.log('Name: ', randMovie[0].title);
 
       deferred.resolve(randMovie[0]);
 
