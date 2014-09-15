@@ -926,32 +926,243 @@ function ngViewFillContentFactory($compile, $controller, $route) {
 
 })(window, window.angular);
 
+var MsUtils = {}
+
+MsUtils.shuffle = function(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex ;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+
+MsUtils.range = function(start, end) {
+    var result = [];
+    for (var i = start; i <= end; i++) {
+        result.push(i);
+    }
+    return result;
+};
 angular.module('app', ['ngRoute']);
 
 angular.module('app').
 config(["$routeProvider", function ($routeProvider) {
   $routeProvider
     .when('/', {
-      templateUrl: 'templates/home.html',
-      controller: 'MovieCtrl'
+      templateUrl: 'templates/selCategory.html',
+      controller: 'CatCtrl'
+    })
+    .when('/selNames', {
+      templateUrl: 'templates/selNames.html',
+      controller: 'NameCtrl'
+    })
+    .when('/question', {
+      templateUrl: 'templates/question.html',
+      controller: 'QuestionCtrl'
+    })
+    .when('/answer', {
+      templateUrl: 'templates/answer.html',
+      controller: 'AnswerCtrl'
     })
     .otherwise({ redirectTo: '/' });
 }]);
 
 angular.module('app').
-controller('MovieCtrl', ["$scope", "movieFactory", function($scope, movieFactory){
+controller('AnswerCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
 
-  $scope.movieResults = {};
+  $scope.gameState = GameState.state();
 
-  movieFactory.getMovies()
-    .then(function(data){
-      $scope.movieResults = data;
-      console.log(data);
-    }, function(data){
-      console.error('error getting elements: ', data);
-    });
+  var init = function() {
+    if($scope.gameState.movie.title == $scope.gameState.guess) {
+      $scope.gameState.win = true;
+      $scope.gameState.points++;
+    }
+  };
+
+  init();
+
 
 }]);
+angular.module('app').
+controller('CatCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
+
+  $scope.gameState = GameState.state();
+  $scope.questionReset = GameState.resetObj();
+
+  $scope.getMovie = function() {
+    movieFactory.getMovie($scope.gameState.category.id, $scope.gameState.year)
+      .then(function(data){
+        $scope.gameState.movie = data;
+        window.location = '/#/selNames';
+      }, function(data){
+        console.error('error getting movie: ', data);
+      });
+  };
+
+  $scope.getYears = function() {
+    if($scope.gameState.years.length === 0) {
+
+      var thisYear = new Date().getFullYear();
+      var tempYears = [];
+
+      // Seed Years
+      for(var i = 1990; i <= thisYear; i++) {
+        tempYears.push(i);
+      }
+
+      var randYears= MsUtils.shuffle(tempYears).slice(0, 5);
+      $scope.gameState.years = randYears.sort();
+    }
+  };
+
+  var init = function() {
+
+    console.log('begin new question');
+
+    for(var property in $scope.questionReset) {
+      $scope.gameState.property = $scope.questionReset.property;
+    }
+
+    movieFactory.getCategories()
+      .then(function(data){
+        $scope.gameState.categories = data;
+      }, function(data){
+        console.error('error getting elements: ', data);
+      });
+  };
+  
+  init();
+
+}]);
+
+angular.module('app').
+controller('MovieGameCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
+
+  $scope.gameState = GameState.state();
+
+}]);
+
+angular.module('app').
+controller('NameCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
+
+  $scope.gameState = GameState.state();
+
+  $scope.range = function(start, end) {
+      var result = [];
+      for (var i = start; i <= end; i++) {
+          result.push(i);
+      }
+      return result;
+  };
+
+  $scope.goToQuestion = function() {
+
+    $scope.gameState.cast = $scope.gameState.cast.slice(0, $scope.gameState.numNames);
+
+    window.location = '/#/question';
+  };
+
+  $scope.noCastConfirm = function() {
+
+    $scope.gameState.numNames = 0;
+
+    window.location = '/#/question';
+  };
+
+
+  var init = function() {
+
+    movieFactory.getClue($scope.gameState.movie.id)
+      .then(function(data){
+        $scope.gameState.clue = data;
+      }, function(data){
+        console.error('error getting clue: ', data);
+      });
+
+    movieFactory.getCast($scope.gameState.movie.id)
+      .then(function(data){
+        console.log('getCast: ', data);
+        $scope.gameState.cast = data.reverse();
+      }, function(data){
+        console.error('error getting cast: ', data);
+      });
+
+  };
+  
+  init();
+
+}]);
+angular.module('app').
+controller('QuestionCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
+
+  $scope.gameState = GameState.state();
+
+  $scope.submitGuess = function() {
+    window.location = '/#/answer';
+  };
+
+  var init = function() {
+
+  };
+
+  init();
+
+
+}]);
+angular.module('app').
+factory('GameState', function() {
+
+  var gameState = {
+    category  : {},
+    movie     : {},
+    cast      : [],
+    clue      : '',
+    year      : null,
+    points    : 0,
+    questions : 0,
+    numNames  : null,
+    categories: [],
+    years     : [],
+    page      : 'selCategory',
+    guess     : '',
+    win       : false
+  };
+
+  var questionReset = {
+    category  : {},
+    movie     : {},
+    cast      : [],
+    clue      : '',
+    year      : null,
+    numNames  : null,
+    categories: [],
+    years     : [],
+    page      : 'selCategory',
+    guess     : '',
+    win       : false
+  };
+
+  return {
+    state: function() {
+      return gameState;
+    },
+    resetObj: function() {
+      return questionReset;
+    }
+  };
+
+});
 
 angular.module('app').
 factory('movieFactory', ["$http", "$q", function($http, $q) {
@@ -963,11 +1174,76 @@ factory('movieFactory', ["$http", "$q", function($http, $q) {
       query   = '&with_genres=35&year=1993',
       url     = hostUrl + method + key + query;
 
-  movieFactoryMethods.getMovies = function() {
+  movieFactoryMethods.getClue = function(movieId) {
     var deferred = $q.defer();
 
+    method  = 'movie/'+movieId;
+    url     = hostUrl + method + key;
+
     $http.get(url).success(function(data){
-      deferred.resolve(data);
+      var results = '';
+
+      if(data.tagline.length) {
+        results = data.tagline;
+      } else {
+        results = data.overview.substr(0, 50);
+      }
+
+      deferred.resolve(results);
+    }).error(function(){
+      deferred.reject('There was an error querying the tmdb API');
+    });
+    return deferred.promise;
+  };
+
+  movieFactoryMethods.getCast = function(movieId) {
+    var deferred = $q.defer();
+
+    method  = 'movie/'+movieId+'/credits';
+    url     = hostUrl + method + key;
+
+    $http.get(url).success(function(data){
+
+      deferred.resolve(data.cast.slice(0, 10));
+    }).error(function(){
+      deferred.reject('There was an error querying the tmdb API');
+    });
+    return deferred.promise;
+  };
+
+  movieFactoryMethods.getCategories = function() {
+    var deferred = $q.defer();
+
+    method  = 'genre/movie/list';
+    url     = hostUrl + method + key;
+
+    $http.get(url).success(function(data){
+      var randGenres = MsUtils.shuffle(data.genres).slice(0, 10);
+      deferred.resolve(randGenres);
+    }).error(function(){
+      deferred.reject('There was an error querying the tmdb API');
+    });
+    return deferred.promise;
+  };
+
+
+  movieFactoryMethods.getMovie = function(cat, year) {
+    var deferred = $q.defer();
+    
+    method  = 'discover/movie';
+    query   = '&with_genres='+cat+'&year='+year;
+    url     = hostUrl + method + key + query;
+
+    console.log('url: ', url);
+
+    $http.get(url).success(function(data){
+
+      randMovie = MsUtils.shuffle(data.results.slice(0, 1));
+
+      console.log('Name: ', randMovie[0].title);
+
+      deferred.resolve(randMovie[0]);
+
     }).error(function(){
       deferred.reject('There was an error querying the tmdb API');
     });

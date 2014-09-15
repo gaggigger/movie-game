@@ -1,0 +1,20 @@
+<p><b>Here is your clue:</b></p>
+
+<div ng-show="gameState.clue.length">
+  <p>{{gameState.clue}}</p>
+</div>
+
+<div ng-show="gameState.cast.length">
+  <p>How many names do you need out of <b>{{gameState.cast.length}}</b>?</p>
+  
+  <select
+    ng-options="number for number in range(0, gameState.cast.length)"
+    ng-model="gameState.numNames"
+    ng-change="goToQuestion()"
+  ></select>
+</div>
+
+<div ng-hide="gameState.cast.length">
+  There are no cast names listed in this movie. 
+  <button ng-click="noCastConfirm()">Continue</button>
+</div>
