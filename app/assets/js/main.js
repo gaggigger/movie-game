@@ -998,7 +998,6 @@ angular.module('app').
 controller('CatCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
 
   $scope.gameState = GameState.state();
-  $scope.questionReset = GameState.resetObj();
 
   $scope.getMovie = function() {
     movieFactory.getMovie($scope.gameState.category.id, $scope.gameState.year)
@@ -1030,9 +1029,8 @@ controller('CatCtrl', ["$scope", "GameState", "movieFactory", function($scope, G
 
     console.log('begin new question');
 
-    for(var property in $scope.questionReset) {
-      $scope.gameState.property = $scope.questionReset.property;
-    }
+    // todo: Trigger gameState reset here
+    GameState.resetObj();
 
     movieFactory.getCategories()
       .then(function(data){
@@ -1041,7 +1039,7 @@ controller('CatCtrl', ["$scope", "GameState", "movieFactory", function($scope, G
         console.error('error getting elements: ', data);
       });
   };
-  
+
   init();
 
 }]);
@@ -1158,7 +1156,16 @@ factory('GameState', function() {
       return gameState;
     },
     resetObj: function() {
-      return questionReset;
+
+      for(var property in questionReset) {
+        console.log('property: ', property);
+        console.log('gameState.property before: ', gameState[property]);
+        gameState[property] = questionReset[property];
+        console.log('gameState.property after: ', gameState[property]);
+        console.log('==================================================');
+      }
+
+      return gameState;
     }
   };
 

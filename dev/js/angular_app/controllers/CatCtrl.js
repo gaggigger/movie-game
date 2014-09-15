@@ -2,7 +2,6 @@ angular.module('app').
 controller('CatCtrl', function($scope, GameState, movieFactory){
 
   $scope.gameState = GameState.state();
-  $scope.questionReset = GameState.resetObj();
 
   $scope.getMovie = function() {
     movieFactory.getMovie($scope.gameState.category.id, $scope.gameState.year)
@@ -34,9 +33,8 @@ controller('CatCtrl', function($scope, GameState, movieFactory){
 
     console.log('begin new question');
 
-    for(var property in $scope.questionReset) {
-      $scope.gameState.property = $scope.questionReset.property;
-    }
+    // todo: Trigger gameState reset here
+    GameState.resetObj();
 
     movieFactory.getCategories()
       .then(function(data){
@@ -45,7 +43,7 @@ controller('CatCtrl', function($scope, GameState, movieFactory){
         console.error('error getting elements: ', data);
       });
   };
-  
+
   init();
 
 });
