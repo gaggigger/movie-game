@@ -985,19 +985,19 @@ angular.module('app').
 config(["$routeProvider", function ($routeProvider) {
   $routeProvider
     .when('/', {
-      templateUrl: 'templates/selCategory.html',
+      templateUrl: 'templates/views/selCategory.html',
       controller: 'CatCtrl'
     })
     .when('/selNames', {
-      templateUrl: 'templates/selNames.html',
+      templateUrl: 'templates/views/selNames.html',
       controller: 'NameCtrl'
     })
     .when('/question', {
-      templateUrl: 'templates/question.html',
+      templateUrl: 'templates/views/question.html',
       controller: 'QuestionCtrl'
     })
     .when('/answer', {
-      templateUrl: 'templates/answer.html',
+      templateUrl: 'templates/views/answer.html',
       controller: 'AnswerCtrl'
     })
     .otherwise({ redirectTo: '/' });
