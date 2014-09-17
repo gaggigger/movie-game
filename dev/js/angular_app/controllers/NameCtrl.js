@@ -9,9 +9,7 @@ controller('NameCtrl', function($scope, GameState, movieFactory){
     $scope.gameState.totalNames = $scope.gameState.cast.length;
     $scope.gameState.cast = $scope.gameState.cast.slice(0, $scope.gameState.numNames);
 
-    console.log('numNames before redirect', $scope.gameState.numNames);
-
-    window.location = '/#/question';
+    window.location = '/movie-game/app/#/question';
   };
 
   // Handle case where there is no cast
@@ -19,7 +17,7 @@ controller('NameCtrl', function($scope, GameState, movieFactory){
 
     $scope.gameState.numNames = 0;
 
-    window.location = '/#/question';
+    window.location = '/movie-game/app/#/question';
   };
 
 
