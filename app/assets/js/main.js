@@ -23,6 +23,34 @@ MsConsts._catBlacklist = [
   'sport'
 ];
 
+var MsUtils = {}
+
+MsUtils.shuffle = function(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex ;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+}
+
+MsUtils.range = function(start, end) {
+    var result = [];
+    for (var i = start; i <= end; i++) {
+        result.push(i);
+    }
+    return result;
+};
 /**
  * @license AngularJS v1.2.17-build.163+sha.fafcd62
  * (c) 2010-2014 Google, Inc. http://angularjs.org
@@ -951,34 +979,6 @@ function ngViewFillContentFactory($compile, $controller, $route) {
 
 })(window, window.angular);
 
-var MsUtils = {}
-
-MsUtils.shuffle = function(array) {
-  var currentIndex = array.length, temporaryValue, randomIndex ;
-
-  // While there remain elements to shuffle...
-  while (0 !== currentIndex) {
-
-    // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
-
-    // And swap it with the current element.
-    temporaryValue = array[currentIndex];
-    array[currentIndex] = array[randomIndex];
-    array[randomIndex] = temporaryValue;
-  }
-
-  return array;
-}
-
-MsUtils.range = function(start, end) {
-    var result = [];
-    for (var i = start; i <= end; i++) {
-        result.push(i);
-    }
-    return result;
-};
 angular.module('app', ['ngRoute']);
 
 angular.module('app').
@@ -1004,12 +1004,151 @@ config(["$routeProvider", function ($routeProvider) {
 }]);
 
 angular.module('app').
+controller('AnswerCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
+
+  var init = function() {
+    if($scope.gameState.movie.title == $scope.gameState.guess) {
+      var score = $scope.gameState.totalNames - $scope.gameState.numNames + 1;
+      console.log('score: ', score);
+
+      $scope.gameState.points += score;
+    }
+
+    $scope.gameState.questions++;
+  };
+
+  init();
+
+  console.log('Answer gameState: ', $scope.gameState);
+
+}]);
+
+angular.module('app').
+controller('CatCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
+
+  $scope.getMovie = function() {
+    movieFactory.getMovie($scope.gameState.category.id, $scope.gameState.year)
+      .then(function(data){
+        $scope.gameState.movie = data;
+        window.location = '/movie-game/app/#/selNames';
+      }, function(data){
+        console.error('error getting movie: ', data);
+      });
+  };
+
+  $scope.getYears = function() {
+    if($scope.gameState.years.length === 0) {
+
+      var thisYear = new Date().getFullYear();
+      var tempYears = [];
+
+      // Seed Years
+      for(var i = 1990; i <= thisYear; i++) {
+        tempYears.push(i);
+      }
+
+      var randYears= MsUtils.shuffle(tempYears).slice(0, 5);
+      $scope.gameState.years = randYears.sort();
+    }
+  };
+
+  var init = function() {
+    GameState.resetState();
+
+    movieFactory.getCategories()
+      .then(function(data){
+        $scope.gameState.categories = data;
+      }, function(data){
+        console.error('error getting elements: ', data);
+      });
+  };
+
+  init();
+
+  console.log('Category gameState: ', $scope.gameState);
+
+}]);
+
+angular.module('app').
+controller('MovieGameCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
+
+  $scope.gameState = GameState.state();
+
+}]);
+
+angular.module('app').
+controller('NameCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
+
+  $scope.castRange = [];
+
+  $scope.goToQuestion = function() {
+
+    // Preserve length of cast for scoring
+    $scope.gameState.totalNames = $scope.gameState.cast.length;
+    $scope.gameState.cast = $scope.gameState.cast.slice(0, $scope.gameState.numNames);
+
+    window.location = '/movie-game/app/#/question';
+  };
+
+  // Handle case where there is no cast
+  $scope.noCastConfirm = function() {
+
+    $scope.gameState.numNames = 0;
+
+    window.location = '/movie-game/app/#/question';
+  };
+
+
+  var init = function() {
+
+    movieFactory.getClue($scope.gameState.movie.id)
+      .then(function(data){
+        $scope.gameState.clue = data;
+      }, function(data){
+        console.error('error getting clue: ', data);
+      });
+
+    movieFactory.getCast($scope.gameState.movie.id)
+      .then(function(data){
+        $scope.gameState.cast = data.reverse();
+        $scope.castRange = MsUtils.range(0, data.length);
+      }, function(data){
+        console.error('error getting cast: ', data);
+      });
+
+  };
+
+  init();
+
+  console.log('Name gameState: ', $scope.gameState);
+
+}]);
+
+angular.module('app').
+controller('QuestionCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
+
+  $scope.submitGuess = function() {
+    window.location = '/movie-game/app/#/answer';
+  };
+
+  var init = function() {
+
+  };
+
+  init();
+
+  console.log('Question gameState: ', $scope.gameState);
+
+}]);
+
+angular.module('app').
 factory('GameState', function() {
 
   var gameState = {
     category  : {},
     movie     : {},
     cast      : [],
+    totalNames: 0,
     clue      : '',
     year      : null,
     points    : 0,
@@ -1027,6 +1166,7 @@ factory('GameState', function() {
     category  : {},
     movie     : {},
     cast      : [],
+    totalNames: 0,
     clue      : '',
     year      : null,
     numNames  : null,
@@ -1132,8 +1272,6 @@ factory('movieFactory', ["$http", "$q", function($http, $q) {
     query   = '&with_genres='+cat+'&year='+year+'&include_adult=false&vote_count.gte=5&certification_country=us&certification.lte=r';
     url     = hostUrl + method + key + query;
 
-    console.log(url);
-
     $http.get(url).success(function(data){
 
       randMovie = MsUtils.shuffle(data.results.slice(0, 1));
@@ -1147,144 +1285,5 @@ factory('movieFactory', ["$http", "$q", function($http, $q) {
   };
 
   return movieFactoryMethods;
-
-}]);
-
-angular.module('app').
-controller('AnswerCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
-
-  $scope.gameState = GameState.state();
-
-  var init = function() {
-    if($scope.gameState.movie.title == $scope.gameState.guess) {
-      $scope.gameState.win = true;
-      $scope.gameState.points++;
-    }
-    $scope.gameState.questions++;
-  };
-
-  init();
-
-
-}]);
-
-angular.module('app').
-controller('CatCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
-
-  $scope.gameState = GameState.state();
-
-  $scope.getMovie = function() {
-    movieFactory.getMovie($scope.gameState.category.id, $scope.gameState.year)
-      .then(function(data){
-        $scope.gameState.movie = data;
-        window.location = '/movie-game/app/#/selNames';
-      }, function(data){
-        console.error('error getting movie: ', data);
-      });
-  };
-
-  $scope.getYears = function() {
-    if($scope.gameState.years.length === 0) {
-
-      var thisYear = new Date().getFullYear();
-      var tempYears = [];
-
-      // Seed Years
-      for(var i = 1990; i <= thisYear; i++) {
-        tempYears.push(i);
-      }
-
-      var randYears= MsUtils.shuffle(tempYears).slice(0, 5);
-      $scope.gameState.years = randYears.sort();
-    }
-  };
-
-  var init = function() {
-    GameState.resetState();
-
-    movieFactory.getCategories()
-      .then(function(data){
-        $scope.gameState.categories = data;
-      }, function(data){
-        console.error('error getting elements: ', data);
-      });
-  };
-
-  init();
-
-}]);
-
-angular.module('app').
-controller('MovieGameCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
-
-  $scope.gameState = GameState.state();
-
-}]);
-
-angular.module('app').
-controller('NameCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
-
-  $scope.gameState = GameState.state();
-
-  $scope.range = function(start, end) {
-      var result = [];
-      for (var i = start; i <= end; i++) {
-          result.push(i);
-      }
-      return result;
-  };
-
-  $scope.goToQuestion = function() {
-
-    $scope.gameState.cast = $scope.gameState.cast.slice(0, $scope.gameState.numNames);
-
-    window.location = '/movie-game/app/#/question';
-  };
-
-  $scope.noCastConfirm = function() {
-
-    $scope.gameState.numNames = 0;
-
-    window.location = '/movie-game/app/#/question';
-  };
-
-
-  var init = function() {
-
-    movieFactory.getClue($scope.gameState.movie.id)
-      .then(function(data){
-        $scope.gameState.clue = data;
-      }, function(data){
-        console.error('error getting clue: ', data);
-      });
-
-    movieFactory.getCast($scope.gameState.movie.id)
-      .then(function(data){
-        $scope.gameState.cast = data.reverse();
-      }, function(data){
-        console.error('error getting cast: ', data);
-      });
-
-  };
-
-  init();
-
-}]);
-
-angular.module('app').
-controller('QuestionCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
-
-  $scope.gameState = GameState.state();
-
-  $scope.submitGuess = function() {
-    window.location = '/movie-game/app/#/answer';
-  };
-
-  var init = function() {
-
-  };
-
-  init();
-
 
 }]);

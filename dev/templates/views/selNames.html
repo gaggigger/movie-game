@@ -8,7 +8,7 @@
   <h5>How many names do you need out of {{gameState.cast.length}}?</h5>
 
   <select
-    ng-options="number for number in range(0, gameState.cast.length)"
+    ng-options="number for number in castRange"
     ng-model="gameState.numNames"
     ng-change="goToQuestion()"
   ></select>
