@@ -1004,6 +1004,146 @@ config(["$routeProvider", function ($routeProvider) {
 }]);
 
 angular.module('app').
+controller('AnswerCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
+
+  var init = function() {
+    if($scope.gameState.movie.title == $scope.gameState.guess) {
+      var score = $scope.gameState.totalNames - $scope.gameState.numNames + 1;
+
+      $scope.gameState.win = true;
+      $scope.gameState.points += score;
+    }
+
+    $scope.gameState.questions++;
+  };
+
+  init();
+
+  console.log('Answer gameState: ', $scope.gameState);
+
+}]);
+
+angular.module('app').
+controller('CatCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
+
+  $scope.getMovie = function() {
+    movieFactory.getMovie($scope.gameState.category.id, $scope.gameState.year)
+      .then(function(data){
+        $scope.gameState.movie = data;
+        window.location = '/#/selNames';
+      }, function(data){
+        console.error('error getting movie: ', data);
+      });
+  };
+
+  $scope.getYears = function() {
+    if($scope.gameState.years.length === 0) {
+
+      var thisYear = new Date().getFullYear();
+      var tempYears = [];
+
+      // Seed Years
+      for(var i = 1990; i <= thisYear; i++) {
+        tempYears.push(i);
+      }
+
+      var randYears= MsUtils.shuffle(tempYears).slice(0, 5);
+      $scope.gameState.years = randYears.sort();
+    }
+  };
+
+  var init = function() {
+    GameState.resetState();
+
+    movieFactory.getCategories()
+      .then(function(data){
+        $scope.gameState.categories = data;
+      }, function(data){
+        console.error('error getting elements: ', data);
+      });
+  };
+
+  init();
+
+  console.log('Category gameState: ', $scope.gameState);
+
+}]);
+
+angular.module('app').
+controller('MovieGameCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
+
+  $scope.gameState = GameState.state();
+
+}]);
+
+angular.module('app').
+controller('NameCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
+
+  $scope.castRange = [];
+
+  $scope.goToQuestion = function() {
+
+    // Preserve length of cast for scoring
+    $scope.gameState.totalNames = $scope.gameState.cast.length;
+    $scope.gameState.cast = $scope.gameState.cast.slice(0, $scope.gameState.numNames);
+
+    console.log('numNames before redirect', $scope.gameState.numNames);
+
+    window.location = '/#/question';
+  };
+
+  // Handle case where there is no cast
+  $scope.noCastConfirm = function() {
+
+    $scope.gameState.numNames = 0;
+
+    window.location = '/#/question';
+  };
+
+
+  var init = function() {
+
+    movieFactory.getClue($scope.gameState.movie.id)
+      .then(function(data){
+        $scope.gameState.clue = data;
+      }, function(data){
+        console.error('error getting clue: ', data);
+      });
+
+    movieFactory.getCast($scope.gameState.movie.id)
+      .then(function(data){
+        $scope.gameState.cast = data.reverse();
+        $scope.castRange = MsUtils.range(0, data.length);
+      }, function(data){
+        console.error('error getting cast: ', data);
+      });
+
+  };
+
+  init();
+
+  console.log('Name gameState: ', $scope.gameState);
+
+}]);
+
+angular.module('app').
+controller('QuestionCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
+
+  $scope.submitGuess = function() {
+    window.location = '/#/answer';
+  };
+
+  var init = function() {
+
+  };
+
+  init();
+
+  console.log('Question gameState: ', $scope.gameState);
+
+}]);
+
+angular.module('app').
 factory('GameState', function() {
 
   var gameState = {
@@ -1145,145 +1285,5 @@ factory('movieFactory', ["$http", "$q", function($http, $q) {
   };
 
   return movieFactoryMethods;
-
-}]);
-
-angular.module('app').
-controller('AnswerCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
-
-  var init = function() {
-    if($scope.gameState.movie.title == $scope.gameState.guess) {
-      var score = $scope.gameState.totalNames - $scope.gameState.numNames + 1;
-
-      $scope.gameState.win = true;
-      $scope.gameState.points += score;
-    }
-
-    $scope.gameState.questions++;
-  };
-
-  init();
-
-  console.log('Answer gameState: ', $scope.gameState);
-
-}]);
-
-angular.module('app').
-controller('CatCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
-
-  $scope.getMovie = function() {
-    movieFactory.getMovie($scope.gameState.category.id, $scope.gameState.year)
-      .then(function(data){
-        $scope.gameState.movie = data;
-        window.location = '/#/selNames';
-      }, function(data){
-        console.error('error getting movie: ', data);
-      });
-  };
-
-  $scope.getYears = function() {
-    if($scope.gameState.years.length === 0) {
-
-      var thisYear = new Date().getFullYear();
-      var tempYears = [];
-
-      // Seed Years
-      for(var i = 1990; i <= thisYear; i++) {
-        tempYears.push(i);
-      }
-
-      var randYears= MsUtils.shuffle(tempYears).slice(0, 5);
-      $scope.gameState.years = randYears.sort();
-    }
-  };
-
-  var init = function() {
-    GameState.resetState();
-
-    movieFactory.getCategories()
-      .then(function(data){
-        $scope.gameState.categories = data;
-      }, function(data){
-        console.error('error getting elements: ', data);
-      });
-  };
-
-  init();
-
-  console.log('Category gameState: ', $scope.gameState);
-
-}]);
-
-angular.module('app').
-controller('MovieGameCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
-
-  $scope.gameState = GameState.state();
-
-}]);
-
-angular.module('app').
-controller('NameCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
-
-  $scope.castRange = [];
-
-  $scope.goToQuestion = function() {
-
-    // Preserve length of cast for scoring
-    $scope.gameState.totalNames = $scope.gameState.cast.length;
-    $scope.gameState.cast = $scope.gameState.cast.slice(0, $scope.gameState.numNames);
-
-    console.log('numNames before redirect', $scope.gameState.numNames);
-
-    window.location = '/#/question';
-  };
-
-  // Handle case where there is no cast
-  $scope.noCastConfirm = function() {
-
-    $scope.gameState.numNames = 0;
-
-    window.location = '/#/question';
-  };
-
-
-  var init = function() {
-
-    movieFactory.getClue($scope.gameState.movie.id)
-      .then(function(data){
-        $scope.gameState.clue = data;
-      }, function(data){
-        console.error('error getting clue: ', data);
-      });
-
-    movieFactory.getCast($scope.gameState.movie.id)
-      .then(function(data){
-        $scope.gameState.cast = data.reverse();
-        $scope.castRange = MsUtils.range(0, data.length);
-      }, function(data){
-        console.error('error getting cast: ', data);
-      });
-
-  };
-
-  init();
-
-  console.log('Name gameState: ', $scope.gameState);
-
-}]);
-
-angular.module('app').
-controller('QuestionCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
-
-  $scope.submitGuess = function() {
-    window.location = '/#/answer';
-  };
-
-  var init = function() {
-
-  };
-
-  init();
-
-  console.log('Question gameState: ', $scope.gameState);
 
 }]);
