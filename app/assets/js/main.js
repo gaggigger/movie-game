@@ -1044,9 +1044,7 @@ factory('GameState', function() {
       return gameState;
     },
     resetState: function() {
-      for(var property in questionReset) {
-        gameState[property] = questionReset[property];
-      }
+      angular.extend(gameState, questionReset);
       return gameState;
     }
   };
@@ -1156,8 +1154,8 @@ controller('AnswerCtrl', ["$scope", "GameState", "movieFactory", function($scope
   var init = function() {
     if($scope.gameState.movie.title == $scope.gameState.guess) {
       var score = $scope.gameState.totalNames - $scope.gameState.numNames + 1;
-      console.log('score: ', score);
 
+      $scope.gameState.win = true;
       $scope.gameState.points += score;
     }
 

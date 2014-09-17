@@ -39,9 +39,7 @@ factory('GameState', function() {
       return gameState;
     },
     resetState: function() {
-      for(var property in questionReset) {
-        gameState[property] = questionReset[property];
-      }
+      angular.extend(gameState, questionReset);
       return gameState;
     }
   };
