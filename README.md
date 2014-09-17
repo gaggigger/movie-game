@@ -6,6 +6,7 @@ This is a mock of The Leonard Maltin Game from [Doug Benson's podcast](http://do
 [You can try out whatever version I have published here](http://slatron.github.io/movie-game/app/)
 
 Rules
+=====
 
 Choose a category and year on the first page. You will be shown a clue that is either the tagline of the film or the first portion of the film's review. You will also see the numner of names in the cast, maximum of ten.
 
