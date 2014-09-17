@@ -1,8 +1,6 @@
 angular.module('app').
 controller('CatCtrl', function($scope, GameState, movieFactory){
 
-  $scope.gameState = GameState.state();
-
   $scope.getMovie = function() {
     movieFactory.getMovie($scope.gameState.category.id, $scope.gameState.year)
       .then(function(data){
@@ -41,5 +39,7 @@ controller('CatCtrl', function($scope, GameState, movieFactory){
   };
 
   init();
+
+  console.log('Category gameState: ', $scope.gameState);
 
 });

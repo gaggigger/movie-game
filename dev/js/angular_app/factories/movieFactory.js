@@ -79,8 +79,6 @@ factory('movieFactory', function($http, $q) {
     query   = '&with_genres='+cat+'&year='+year+'&include_adult=false&vote_count.gte=5&certification_country=us&certification.lte=r';
     url     = hostUrl + method + key + query;
 
-    console.log(url);
-
     $http.get(url).success(function(data){
 
       randMovie = MsUtils.shuffle(data.results.slice(0, 1));

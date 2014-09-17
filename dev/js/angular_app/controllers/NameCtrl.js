@@ -1,23 +1,20 @@
 angular.module('app').
 controller('NameCtrl', function($scope, GameState, movieFactory){
 
-  $scope.gameState = GameState.state();
-
-  $scope.range = function(start, end) {
-      var result = [];
-      for (var i = start; i <= end; i++) {
-          result.push(i);
-      }
-      return result;
-  };
+  $scope.castRange = [];
 
   $scope.goToQuestion = function() {
 
+    // Preserve length of cast for scoring
+    $scope.gameState.totalNames = $scope.gameState.cast.length;
     $scope.gameState.cast = $scope.gameState.cast.slice(0, $scope.gameState.numNames);
+
+    console.log('numNames before redirect', $scope.gameState.numNames);
 
     window.location = '/#/question';
   };
 
+  // Handle case where there is no cast
   $scope.noCastConfirm = function() {
 
     $scope.gameState.numNames = 0;
@@ -38,6 +35,7 @@ controller('NameCtrl', function($scope, GameState, movieFactory){
     movieFactory.getCast($scope.gameState.movie.id)
       .then(function(data){
         $scope.gameState.cast = data.reverse();
+        $scope.castRange = MsUtils.range(0, data.length);
       }, function(data){
         console.error('error getting cast: ', data);
       });
@@ -45,5 +43,7 @@ controller('NameCtrl', function($scope, GameState, movieFactory){
   };
 
   init();
+
+  console.log('Name gameState: ', $scope.gameState);
 
 });
