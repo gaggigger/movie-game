@@ -5,7 +5,7 @@ controller('CatCtrl', function($scope, GameState, movieFactory){
     movieFactory.getMovie($scope.gameState.category.id, $scope.gameState.year)
       .then(function(data){
         $scope.gameState.movie = data;
-        window.location = '/movie-game/app/#/selNames';
+        window.location = '/#/selNames';
       }, function(data){
         console.error('error getting movie: ', data);
       });
