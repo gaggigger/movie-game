@@ -4,8 +4,8 @@ controller('AnswerCtrl', function($scope, GameState, movieFactory){
   var init = function() {
     if($scope.gameState.movie.title == $scope.gameState.guess) {
       var score = $scope.gameState.totalNames - $scope.gameState.numNames + 1;
-      console.log('score: ', score);
 
+      $scope.gameState.win = true;
       $scope.gameState.points += score;
     }
 
