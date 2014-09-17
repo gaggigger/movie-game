@@ -3,7 +3,7 @@ The Leonard Maltin Game Trainer
 
 This is a mock of The Leonard Maltin Game from [Doug Benson's podcast](http://douglovesmovies.com/).
 
-[You can try out whatever version I have published here](http://slatron.github.io/movie-game/app/)
+[You can play the latest version here](http://slatron.github.io/movie-game/app/)
 
 Rules
 =====
