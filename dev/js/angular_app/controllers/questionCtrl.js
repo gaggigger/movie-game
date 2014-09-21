@@ -2,7 +2,7 @@ angular.module('app').
 controller('QuestionCtrl', function($scope, GameState, movieFactory){
 
   $scope.submitGuess = function() {
-    window.location = '/#/answer';
+    window.location = '/movie-game/app/#/answer';
   };
 
   var init = function() {
