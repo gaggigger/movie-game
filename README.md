@@ -15,3 +15,27 @@ Of the names shown, bid how many names you think you can name the movie in. You 
 When making a guess, you must name the full title of the movie. For example, it is National Lampoon's Animal House, not Animal House. And it is Speed 2: Cruise Control, not simply Speed 2.
 
 To best understand the game, listen to [Doug Loves Movies](http://douglovesmovies.com/).
+
+Installation
+============
+
+To install locally, clone this repository and cd in:
+
+```
+$ git clone git@github.com:slatron/movie-game.git
+$ cd movie-game
+```
+
+Run npm to install dependencies:
+
+```
+$ npm install
+```
+
+Run gulp to build app and run local server:
+
+```
+$ gulp
+```
+
+Then, go to `localhost:2710` in a browser.
