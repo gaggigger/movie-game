@@ -1175,7 +1175,7 @@ controller('CatCtrl', ["$scope", "GameState", "movieFactory", function($scope, G
     movieFactory.getMovie($scope.gameState.category.id, $scope.gameState.year)
       .then(function(data){
         $scope.gameState.movie = data;
-        window.location = '/#/selNames';
+        window.location = '/movie-game/app/#/selNames';
       }, function(data){
         console.error('error getting movie: ', data);
       });
@@ -1232,7 +1232,7 @@ controller('NameCtrl', ["$scope", "GameState", "movieFactory", function($scope, 
     $scope.gameState.totalNames = $scope.gameState.cast.length;
     $scope.gameState.cast = $scope.gameState.cast.slice(0, $scope.gameState.numNames);
 
-    window.location = '/#/question';
+    window.location = '/movie-game/app/#/question';
   };
 
   // Handle case where there is no cast
@@ -1240,7 +1240,7 @@ controller('NameCtrl', ["$scope", "GameState", "movieFactory", function($scope, 
 
     $scope.gameState.numNames = 0;
 
-    window.location = '/#/question';
+    window.location = '/movie-game/app/#/question';
   };
 
 
@@ -1273,7 +1273,7 @@ angular.module('app').
 controller('QuestionCtrl', ["$scope", "GameState", "movieFactory", function($scope, GameState, movieFactory){
 
   $scope.submitGuess = function() {
-    window.location = '/#/answer';
+    window.location = '/movie-game/app/#/answer';
   };
 
   var init = function() {
